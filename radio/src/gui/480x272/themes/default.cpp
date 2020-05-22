@@ -176,6 +176,8 @@ class DefaultTheme: public Theme
       delete calibHorus;
 #if defined(RADIO_T16)
       calibHorus = BitmapBuffer::load(getThemePath("t16.bmp"));
+#elif defined(RADIO_TX16S)
+      calibHorus = BitmapBuffer::load(getThemePath("tx16s.bmp"));
 #elif defined(PCBX10)
       if(STICKS_PWM_ENABLED()) {
         calibHorus = BitmapBuffer::load(getThemePath("X10S.bmp"));
@@ -351,4 +353,6 @@ BitmapBuffer * DefaultTheme::menuIconSelected[MENUS_ICONS_COUNT] = { NULL };
 BitmapBuffer * DefaultTheme::currentMenuBackground = NULL;
 
 DefaultTheme defaultTheme;
-Theme * theme = &defaultTheme;
+#if defined(DEFAULT_THEME_DEFAULT)
+  Theme * theme = &defaultTheme;
+#endif

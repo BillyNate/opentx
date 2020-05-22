@@ -4,7 +4,7 @@
 set -e
 set -x
 
-JOBS=2
+JOBS=3
 
 while [ $# -gt 0 ]
 do
@@ -62,6 +62,10 @@ cmake ${COMMON_OPTIONS} -DPCB=X7 ${SRCDIR}
 make -j${JOBS} libsimulator
 rm CMakeCache.txt
 
+cmake ${COMMON_OPTIONS} -DPCB=X7 -DPCBREV=ACCESS ${SRCDIR}
+make -j${JOBS} libsimulator
+rm CMakeCache.txt
+
 cmake ${COMMON_OPTIONS} -DPCB=X7 -DPCBREV=T12 ${SRCDIR}
 make -j${JOBS} libsimulator
 rm CMakeCache.txt
@@ -95,6 +99,10 @@ make -j${JOBS} libsimulator
 rm CMakeCache.txt
 
 cmake ${COMMON_OPTIONS} -DPCB=X10 -DPCBREV=T16 -DINTERNAL_MODULE_MULTI=YES ${SRCDIR}
+make -j${JOBS} libsimulator
+rm CMakeCache.txt
+
+cmake ${COMMON_OPTIONS} -DPCB=X10 -DPCBREV=TX16S ${SRCDIR}
 make -j${JOBS} libsimulator
 rm CMakeCache.txt
 

@@ -94,6 +94,9 @@ SimulatorWidget::SimulatorWidget(QWidget * parent, SimulatorInterface * simulato
     case Board::BOARD_JUMPER_T16:
       radioUiWidget = new SimulatedUIWidgetJumperT16(simulator, this);
       break;
+    case Board::BOARD_RADIOMASTER_TX16S:
+      radioUiWidget = new SimulatedUIWidgetTX16S(simulator, this);
+      break;
     default:
       radioUiWidget = new SimulatedUIWidget9X(simulator, this);
       break;
@@ -270,7 +273,7 @@ bool SimulatorWidget::setRadioData(RadioData * radioData)
 
   saveTempRadioData = (flags & SIMULATOR_FLAGS_STANDALONE);
 
-  if (IS_HORUS(m_board))
+  if (IS_FAMILY_HORUS_OR_T16(m_board))
     ret = useTempDataPath(true);
 
   if (ret) {
@@ -696,9 +699,11 @@ void SimulatorWidget::restoreRadioWidgetsState()
 void SimulatorWidget::saveRadioWidgetsState(QList<QByteArray> & state)
 {
   if (m_radioWidgets.size()) {
-    state.clear();
-    foreach (RadioWidget * rw, m_radioWidgets)
-      state.append(rw->getStateData());
+    if (g.simuSW()) {
+      state.clear();
+      foreach (RadioWidget * rw, m_radioWidgets)
+        state.append(rw->getStateData());
+    }
   }
 }
 

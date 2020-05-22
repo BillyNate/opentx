@@ -309,7 +309,7 @@ void readKeysAndTrims()
 
   if ((keys_input & ~(uint16_t)(BIT(30)|BIT(31))) && (g_eeGeneral.backlightMode & e_backlight_mode_keys)) {
     // on keypress turn the light on
-    backlightOn();
+    resetBacklightTimeout();
   }
 
 #if ROTARY_ENCODERS > 0

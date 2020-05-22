@@ -51,8 +51,23 @@ if (PCB STREQUAL X10)
     set(FLAVOUR t16)
     set(LUA_EXPORT lua_export_t16)
     add_definitions(-DRADIO_T16)
+    add_definitions(-DRADIO_FAMILY_T16)
     option(INTERNAL_MODULE_MULTI "Support for MULTI internal module" OFF)
     option(BLUETOOTH "Support for bluetooth module" OFF)
+  elseif (PCBREV STREQUAL TX16S)
+    set(FLAVOUR tx16s)
+    set(LUA_EXPORT lua_export_t16)
+    add_definitions(-DRADIO_TX16S)
+    add_definitions(-DRADIO_FAMILY_T16)
+    option(INTERNAL_MODULE_MULTI "Support for MULTI internal module" ON)
+    option(BLUETOOTH "Support for bluetooth module" OFF)
+    set(HARDWARE_TOUCH YES)
+    set(USB_CHARGER YES)
+    set(DEFAULT_THEME "DARKBLUE")
+    set(AUX_SERIAL ON)
+    if (NOT BLUETOOTH)
+      set(AUX2_SERIAL ON)
+    endif()
   else()
     set(FLAVOUR x10)
     option(INTERNAL_MODULE_PXX1 "Support for PXX1 internal module" ON)
@@ -101,6 +116,12 @@ add_definitions(-DPCBHORUS -DSTM32F429_439xx -DSDRAM -DCOLORLCD)
 add_definitions(-DEEPROM_VARIANT=0 -DAUDIO -DVOICE -DRTCLOCK)
 add_definitions(-DGPS_USART_BAUDRATE=${INTERNAL_GPS_BAUDRATE})
 add_definitions(-DPWR_BUTTON_${PWR_BUTTON})
+
+if(DEFAULT_THEME)
+  add_definitions(-DDEFAULT_THEME_${DEFAULT_THEME})
+else()
+  add_definitions(-DDEFAULT_THEME_DEFAULT)
+endif()
 
 if(NOT UNEXPECTED_SHUTDOWN)
   add_definitions(-DNO_UNEXPECTED_SHUTDOWN)
@@ -195,15 +216,38 @@ set(TARGET_SRC
   ../common/arm/stm32/rotary_encoder_driver.cpp
   )
 
+if(HARDWARE_TOUCH)
+  set(TARGET_SRC ${TARGET_SRC}
+    tp_gt911.cpp
+    )
+  add_definitions(-DHARDWARE_TOUCH)
+endif()
+
+if(USB_CHARGER)
+  set(TARGET_SRC ${TARGET_SRC} usb_charger_driver.cpp)
+  add_definitions(-DUSB_CHARGER)
+endif()
+
 if(BLUETOOTH)
   add_definitions(-DBLUETOOTH)
   set(TARGET_SRC ${TARGET_SRC} ../common/arm/stm32/bluetooth_driver.cpp)
   set(SRC ${SRC} bluetooth.cpp)
 endif()
 
+if (AUX_SERIAL)
+  add_definitions(-DAUX_SERIAL)
+  set(AUX_SERIAL_DRIVER ../common/arm/stm32/aux_serial_driver.cpp)
+endif()
+
+if (AUX2_SERIAL)
+  add_definitions(-DAUX2_SERIAL)
+  set(AUX_SERIAL_DRIVER ../common/arm/stm32/aux_serial_driver.cpp)
+endif()
+
 set(FIRMWARE_TARGET_SRC
   ${FIRMWARE_TARGET_SRC}
   ${LCD_DRIVER}
+  ${AUX_SERIAL_DRIVER}
   board.cpp
   backlight_driver.cpp
   ../common/arm/stm32/pwr_driver.cpp
@@ -266,7 +310,7 @@ if(PYTHONINTERP_FOUND)
   add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/radio/src/datacopy.cpp
     WORKING_DIRECTORY ${RADIO_DIRECTORY}/src
-    COMMAND ${PYTHON_EXECUTABLE} ${RADIO_DIRECTORY}/util/generate_datacopy.py datastructs.h -DPCBHORUS -DPCBX10 -DCPUARM -DSTM32F4 -DSTM32F429_439xx -DCOLORLCD -DBACKUP -DSIMU -I. -Itargets/horus -Itargets/common/arm/stm32 -I${THIRDPARTY_DIR} -I${THIRDPARTY_DIR}/STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32F4xx/Include ${arm_gcc_include_path} > ${PROJECT_BINARY_DIR}/radio/src/datacopy.cpp
+    COMMAND ${PYTHON_EXECUTABLE} ${RADIO_DIRECTORY}/util/generate_datacopy.py datastructs.h -DPCBHORUS -DPCBX10 -DCPUARM -DSTM32F4 -DSTM32F429_439xx -DCOLORLCD -DBACKUP -DSIMU -I. -Itargets/horus -Itargets/common/arm/stm32 -I${THIRDPARTY_DIR} -I${THIRDPARTY_DIR}/STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32F4xx/Include > ${PROJECT_BINARY_DIR}/radio/src/datacopy.cpp
     DEPENDS ${RADIO_DIRECTORY}/src/datastructs.h ${RADIO_DIRECTORY}/util/generate_datacopy.py
     )
   add_custom_target(datacopy

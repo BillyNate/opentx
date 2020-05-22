@@ -316,6 +316,19 @@ static void processMultiTelemetryPaket(const uint8_t * packet, uint8_t module)
   uint8_t len = packet[1];
   const uint8_t * data = packet + 2;
 
+#if defined(AUX_SERIAL)
+  if (g_eeGeneral.auxSerialMode == UART_MODE_TELEMETRY_MIRROR) {
+    for (uint8_t c=0; c < len; c++)
+      auxSerialPutc(packet[c]);
+  }
+#endif
+#if defined(AUX2_SERIAL)
+  if (g_eeGeneral.aux2SerialMode == UART_MODE_TELEMETRY_MIRROR) {
+    for (uint8_t c=0; c < len; c++)
+      aux2SerialPutc(packet[c]);
+  }
+#endif
+
   // Switch type
   switch (type) {
     case MultiStatus:
@@ -548,7 +561,7 @@ void MultiModuleStatus::getStatusString(char * statusText) const
     return;
   }
 
-  if (major <= 1 && minor <= 3 && revision <= 0 && patch <= 47 && SLOW_BLINK_ON_PHASE) {
+  if (major <= 1 && minor <= 3 && revision <= 0 && patch < 91 && SLOW_BLINK_ON_PHASE) {
     strcpy(statusText, STR_MODULE_UPGRADE);
   }
   else {

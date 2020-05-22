@@ -18,6 +18,7 @@
  * GNU General Public License for more details.
  */
 
+#include <math.h>
 #include "opentx.h"
 
 void drawStringWithIndex(coord_t x, coord_t y, const char * str, int idx, LcdFlags flags, const char * prefix, const char * suffix)
@@ -31,7 +32,7 @@ void drawStringWithIndex(coord_t x, coord_t y, const char * str, int idx, LcdFla
   lcdDrawText(x, y, s, flags);
 }
 
-void drawValueWithUnit(coord_t x, coord_t y, int val, uint8_t unit, LcdFlags att)
+void drawValueWithUnit(coord_t x, coord_t y, int32_t val, uint8_t unit, LcdFlags att)
 {
   // convertUnit(val, unit);
   if (!(att & NO_UNIT) && unit != UNIT_RAW) {

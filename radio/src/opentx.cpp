@@ -293,9 +293,7 @@ void generalDefault()
   g_eeGeneral.stickMode = DEFAULT_MODE - 1;
 #endif
 
-#if defined(FRSKY_RELEASE)
-  g_eeGeneral.templateSetup = 17; /* TAER */
-#endif
+  g_eeGeneral.templateSetup = DEFAULT_TEMPLATE_SETUP;
 
   g_eeGeneral.backlightMode = e_backlight_mode_all;
   g_eeGeneral.lightAutoOff = 2;
@@ -687,7 +685,7 @@ void checkBacklight()
     if (inputsMoved()) {
       inactivity.counter = 0;
       if (g_eeGeneral.backlightMode & e_backlight_mode_sticks) {
-        backlightOn();
+        resetBacklightTimeout();
       }
     }
 
@@ -700,7 +698,7 @@ void checkBacklight()
   }
 }
 
-void backlightOn()
+void resetBacklightTimeout()
 {
   lightOffCounter = ((uint16_t)g_eeGeneral.lightAutoOff*250) << 1;
 }
@@ -727,7 +725,7 @@ void doSplash()
 #endif
 
   if (SPLASH_NEEDED()) {
-    backlightOn();
+    resetBacklightTimeout();
     drawSplash();
 
 #if defined(PCBSKY9X)
@@ -1724,6 +1722,25 @@ void copyTrimsToOffset(uint8_t ch)
   storageDirty(EE_MODEL);
 }
 
+void copyMinMaxToOutputs(uint8_t ch)
+{
+  LimitData *ld = limitAddress(ch);
+  int16_t min = ld->min;
+  int16_t max = ld->max;
+  int16_t center = ld->ppmCenter;
+
+  pauseMixerCalculations();
+
+  for (uint8_t chan = 0; chan < MAX_OUTPUT_CHANNELS; chan++) {
+    ld = limitAddress(chan);
+    ld->min = min;
+    ld->max = max;
+    ld->ppmCenter = center;
+  }
+
+  resumeMixerCalculations();
+  storageDirty(EE_MODEL);
+}
 
 #if defined(STARTUP_ANIMATION)
 
@@ -1921,6 +1938,10 @@ void opentxInit()
   auxSerialInit(g_eeGeneral.auxSerialMode, modelTelemetryProtocol());
 #endif
 
+#if defined(AUX2_SERIAL)
+  aux2SerialInit(g_eeGeneral.aux2SerialMode, modelTelemetryProtocol());
+#endif
+
 #if MENUS_LOCK == 1
   getMovedSwitch();
   if (TRIMS_PRESSED() && g_eeGeneral.switchUnlockStates==switches_states) {
@@ -1946,6 +1967,10 @@ void opentxInit()
   btInit();
 #endif
 
+#if defined(SPORT_UPDATE_PWR_GPIO)
+  SPORT_UPDATE_POWER_INIT();
+#endif
+
 #if defined(COLORLCD)
   loadTheme();
   loadFontCache();
@@ -1953,7 +1978,7 @@ void opentxInit()
 
   if (g_eeGeneral.backlightMode != e_backlight_mode_off) {
     // on Tx start turn the light on
-    backlightOn();
+    resetBacklightTimeout();
   }
 
   if (!globalData.unexpectedShutdown) {
@@ -1971,7 +1996,7 @@ void opentxInit()
   lcdSetContrast();
 #endif
 
-  backlightOn();
+  resetBacklightTimeout();
 
   startPulses();
 

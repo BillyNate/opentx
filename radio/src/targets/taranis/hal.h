@@ -754,7 +754,7 @@
   #define ADC_EXT_SET_DMA_FLAGS()       ADC_DMA->LIFCR = (DMA_LIFCR_CTCIF0 | DMA_LIFCR_CHTIF0 | DMA_LIFCR_CTEIF0 | DMA_LIFCR_CDMEIF0 | DMA_LIFCR_CFEIF0)
   #define ADC_EXT_TRANSFER_COMPLETE()   (ADC_DMA->LISR & DMA_LISR_TCIF0)
   #define ADC_EXT_SAMPTIME              3    // sample time = 56 cycles
-  #define ADC_VREF_PREC2                200
+  #define ADC_VREF_PREC2                300
 #elif defined(PCBX9DP)
   #define HARDWARE_POT1
   #define HARDWARE_POT2
@@ -1078,11 +1078,6 @@
   #define INTMODULE_GPIO_AF               GPIO_AF_USART3
   #define INTMODULE_USART_IRQn            USART3_IRQn
   #define INTMODULE_USART_IRQHandler      USART3_IRQHandler
-  #define INTMODULE_DMA_STREAM            DMA1_Stream3
-  #define INTMODULE_DMA_STREAM_IRQ        DMA1_Stream3_IRQn
-  #define INTMODULE_DMA_STREAM_IRQHandler DMA1_Stream3_IRQHandler
-  #define INTMODULE_DMA_FLAG_TC           DMA_IT_TCIF3
-  #define INTMODULE_DMA_CHANNEL           DMA_Channel_4
   #define INTMODULE_RCC_APB1Periph        RCC_APB1Periph_TIM2
   #define INTMODULE_RCC_APB2Periph        RCC_APB1Periph_USART3
   #define INTMODULE_TIMER                 TIM2
@@ -1309,10 +1304,12 @@
 #if defined(PCBX7) || defined(PCBXLITE) || defined(PCBX9LITE) || defined(RADIO_X9DP2019)
   #define AUX_SERIAL_RCC_AHB1Periph         0
   #define AUX_SERIAL_RCC_APB1Periph         0
+  #define AUX_SERIAL_RCC_APB2Periph         0
 #else
   #define TRAINER_BATTERY_COMPARTMENT
   #define AUX_SERIAL_RCC_AHB1Periph         (RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_DMA1)
   #define AUX_SERIAL_RCC_APB1Periph         RCC_APB1Periph_USART3
+  #define AUX_SERIAL_RCC_APB2Periph         0
   #define AUX_SERIAL_GPIO                   GPIOB
   #define AUX_SERIAL_GPIO_PIN_TX            GPIO_Pin_10 // PB.10
   #define AUX_SERIAL_GPIO_PIN_RX            GPIO_Pin_11 // PB.11
@@ -1326,9 +1323,15 @@
   #define AUX_SERIAL_DMA_Channel_RX         DMA_Channel_4
 #endif
 
+// No aux2 on taranis
+#define AUX2_SERIAL_RCC_AHB1Periph           0
+#define AUX2_SERIAL_RCC_APB1Periph           0
+#define AUX2_SERIAL_RCC_APB2Periph           0
+
 // Telemetry
 #define TELEMETRY_RCC_AHB1Periph        (RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_DMA1)
 #define TELEMETRY_RCC_APB1Periph        RCC_APB1Periph_USART2
+#define TELEMETRY_RCC_APB2Periph        RCC_APB2Periph_TIM11
 #define TELEMETRY_DIR_GPIO              GPIOD
 #define TELEMETRY_DIR_GPIO_PIN          GPIO_Pin_4  // PD.04
 #if defined(PCBXLITE) || defined(PCBX9LITE) || defined(RADIO_X9DP2019) || defined(RADIO_X7ACCESS)

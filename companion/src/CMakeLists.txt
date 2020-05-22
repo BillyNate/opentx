@@ -251,6 +251,7 @@ set(companion_SRCS
   wizarddialog.cpp
   styleeditdialog.cpp
   dialogs/filesyncdialog.cpp         # TODO move to own lib with other dialogs
+  profilechooser.cpp
   )
 
 set(companion_MOC_HDRS
@@ -286,6 +287,7 @@ set(companion_MOC_HDRS
   styleeditdialog.h
   helpers_html.h
   dialogs/filesyncdialog.h
+  profilechooser.h
   )
 
 set(companion_UIS
@@ -307,6 +309,7 @@ set(companion_UIS
   flasheepromdialog.ui
   radionotfound.ui
   styleeditdialog.ui
+  profilechooser.ui
   )
 
 if(WIN32)
@@ -357,6 +360,8 @@ elseif(PCB STREQUAL X10 AND PCBREV STREQUAL EXPRESS)
   set(FLAVOUR x10express)
 elseif(PCB STREQUAL X10 AND PCBREV STREQUAL T16)
   set(FLAVOUR t16)
+elseif(PCB STREQUAL X10 AND PCBREV STREQUAL TX16S)
+  set(FLAVOUR tx16s)
 else()
   string(TOLOWER ${PCB} FLAVOUR)
 endif()

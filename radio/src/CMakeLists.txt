@@ -354,6 +354,10 @@ if(JUMPER_RELEASE)
   add_definitions(-DJUMPER_RELEASE)
 endif()
 
+if(RADIOMASTER_RELEASE)
+  add_definitions(-DRADIOMASTER_RELEASE)
+endif()
+
 if(TBS_RELEASE)
   add_definitions(-DTBS_RELEASE)
 endif()
@@ -368,6 +372,13 @@ if(ALLOW_TRAINER_MULTI)
 endif()
 
 add_definitions(-DPOPUP_LEVEL=${POPUP_LEVEL})
+
+if(INTERNAL_MODULE_MULTI)
+  set(DEFAULT_TEMPLATE_SETUP 21 CACHE STRING "")
+else()
+  set(DEFAULT_TEMPLATE_SETUP 0 CACHE STRING "")
+endif()
+add_definitions(-DDEFAULT_TEMPLATE_SETUP=${DEFAULT_TEMPLATE_SETUP})
 
 set(SRC
   ${SRC}
@@ -427,7 +438,6 @@ if(NOT MSVC)
 endif()
 
 set(SRC ${SRC} ${FIRMWARE_SRC})
-
 
 ##### firmware target #####
 
